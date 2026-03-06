@@ -17,6 +17,7 @@ hc [<global-flags>] <command> <subcommand> [<positional-args>…] [<flags>]
 | `auth` | - | Authentication commands (login, logout, status) |
 | `registry` | `reg` | Manage Harness Artifact Registries |
 | `artifact` | `art` | Manage artifacts in registries |
+| `pipeline` | `pipe` | Manage Harness CI/CD Pipelines |
 | `project` | `proj` | Manage Harness Projects |
 | `organisation` | `org` | Manage Harness Organisations |
 | `api` | - | Raw REST API passthrough for power users |
@@ -168,6 +169,108 @@ hc artifact push go <registry-name> <module-path>
 hc artifact pull generic <registry-name> <package-path> <destination>
 ```
 
+### Pipeline Management (`hc pipeline` or `hc pipe`)
+
+Manage Harness CI/CD Pipelines, monitor executions, and trigger pipeline runs.
+
+```bash
+# List all pipelines
+hc pipeline list
+hc pipe list  # Using alias
+
+# List with pagination
+hc pipeline list --page 2 --size 50
+
+# Get pipeline details
+hc pipeline get <pipeline-id>
+
+# Get pipeline YAML definition
+hc pipeline get <pipeline-id> --yaml
+
+# List pipeline executions
+hc pipeline executions
+
+# List executions for a specific pipeline
+hc pipeline executions --pipeline <pipeline-id>
+
+# Filter executions by status
+hc pipeline executions --status Success
+hc pipeline executions --status Failed --pipeline <pipeline-id>
+
+# Get execution details
+hc pipeline execution <execution-id>
+
+# Download execution logs
+hc pipeline logs <execution-id>
+
+# Save logs to a custom file
+hc pipeline logs <execution-id> --output execution-logs.txt
+hc pipeline logs <execution-id> -o logs.txt
+
+# Save logs to a directory
+hc pipeline logs <execution-id> --output-dir ./logs
+
+# Trigger a pipeline (requires --confirm flag for safety)
+hc pipeline trigger <pipeline-id> --confirm
+
+# Trigger with input sets
+hc pipeline trigger <pipeline-id> --input-set prod-config --confirm
+hc pipeline trigger <pipeline-id> --input-set common --input-set prod --confirm
+
+# Trigger with runtime input YAML
+hc pipeline trigger <pipeline-id> --runtime-input inputs.yaml --confirm
+
+# List pipeline input sets
+hc pipeline input-sets <pipeline-id>
+
+# List pipeline triggers
+hc pipeline triggers <pipeline-id>
+```
+
+#### Pipeline Command Details
+
+**List Pipelines** (`hc pipeline list`)
+- Lists all pipelines in your project
+- Supports pagination with `--page` and `--size` flags
+- Default page size is 20
+
+**Get Pipeline** (`hc pipeline get`)
+- Get detailed information about a specific pipeline
+- Use `--yaml` flag to output the pipeline YAML definition
+- Useful for inspecting pipeline configuration
+
+**List Executions** (`hc pipeline executions`)
+- Lists pipeline execution history
+- Filter by specific pipeline using `--pipeline` flag
+- Filter by status: `Success`, `Failed`, `Running`, `Aborted`, etc.
+- Supports pagination for large result sets
+
+**Get Execution** (`hc pipeline execution`)
+- Get detailed information about a specific execution
+- Shows execution status, timing, and stage information
+- Use execution ID from the executions list
+
+**Download Logs** (`hc pipeline logs`)
+- Downloads complete execution logs
+- Default saves to `execution-<id>-logs.txt`
+- Use `--output` or `-o` for custom filename
+- Use `--output-dir` to specify save directory
+
+**Trigger Pipeline** (`hc pipeline trigger`)
+- Manually trigger a pipeline execution
+- **Requires `--confirm` flag** as a safety measure
+- Optionally specify input sets with `--input-set` (can be used multiple times)
+- Provide runtime inputs via `--runtime-input` YAML file
+- Returns execution ID for tracking
+
+**List Input Sets** (`hc pipeline input-sets`)
+- Lists all input sets configured for a pipeline
+- Shows input set identifiers, names, and types
+
+**List Triggers** (`hc pipeline triggers`)
+- Lists all triggers configured for a pipeline
+- Shows trigger names, types (Webhook, Scheduled, etc.), and enabled status
+
 ### Project Management (`hc project` or `hc proj`) (coming soon)
 
 Manage Harness Projects.
@@ -269,6 +372,7 @@ harness-cli/
 │   ├── auth/         # Authentication commands
 │   ├── registry/     # Registry management commands
 │   ├── artifact/     # Artifact management commands
+│   ├── pipeline/     # Pipeline management commands
 │   ├── project/      # Project management commands
 │   ├── organisation/ # Organisation management commands
 │   └── api/          # API passthrough command

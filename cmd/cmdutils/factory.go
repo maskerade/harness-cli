@@ -6,6 +6,7 @@ import (
 	"github.com/harness/harness-cli/internal/api/ar_v2"
 	"github.com/harness/harness-cli/internal/api/ar_v3"
 	"github.com/harness/harness-cli/util/common/auth"
+	"github.com/harness/harness-cli/util/pipeline"
 
 	"github.com/rs/zerolog/log"
 )
@@ -15,6 +16,7 @@ type Factory struct {
 	RegistryHttpClient   func() *ar.ClientWithResponses
 	RegistryV2HttpClient func() *ar_v2.ClientWithResponses
 	RegistryV3HttpClient func() *ar_v3.ClientWithResponses
+	PipelineClient       func() *pipeline.Client
 }
 
 func NewFactory() *Factory {
@@ -42,6 +44,9 @@ func NewFactory() *Factory {
 				log.Fatal().Msgf("Error creating client: %v", err)
 			}
 			return client
+		},
+		PipelineClient: func() *pipeline.Client {
+			return pipeline.NewClient()
 		},
 	}
 }
